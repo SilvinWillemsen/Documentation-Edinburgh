@@ -106,11 +106,11 @@ When applied twice, this is called the biharmonic or bi-Laplacian operator and r
 \end{equation}
 In discrete time we can approximate the above operators (Sec. 10.2, Eq. 10.9:
 \begin{equation}
-    \Delta u \approx \delta_{\Delta\boxplus} \triangleq \delta_{xx}u + \delta_{yy}
+    \Delta u \approx \delta_{\Delta\boxplus} \triangleq \delta_{xx}u + \delta_{yy}u
 \end{equation}
 and 
 \begin{equation}
-    \Delta\Delta u \approx \delta_{\Delta\boxplus}\delta_{\Delta\boxplus} \triangleq \delta_{xxxx}u + 2\delta_{xxyy} + \delta_{yyyy}
+    \Delta\Delta u \approx \delta_{\Delta\boxplus}\delta_{\Delta\boxplus} \triangleq \delta_{xxxx}u + 2\delta_{xxyy}u + \delta_{yyyy}u
 \end{equation}
 
 \subsection{Inner Products and Norms}
@@ -145,7 +145,7 @@ The scaled form of is defined ase
 \end{equation}
 where $\gamma = c/L$ is the scaled wave speed [s$^{-1}$] with (non-scaled) wave speed $c = \sqrt{T/\rho A}$ [m/s] and string-length $L$ [m].
 
-In the first case, $x$ is defined over a physical domain $x\in[0,L]$. In the scaled case, $x' = x/L$ is a unit-less variable defined over $x\in[0,1]$. An advantage of scaling is that it greatly simplifies the the physical system one works with \cite{Bilbao2009}. However, in my application, when working with two  elements of different types, it is better to take a step back to the slightly less simple, but more physically accurate world. In the rest of this documents I will thus use a dimensional form for the equations.
+In the first case, $x$ is defined over a physical domain $x\in[0,L]$. In the scaled case, $x' = x/L$ is a unit-less variable defined over $x\in[0,1]$. An advantage of scaling is that it greatly simplifies the the physical system one works with \cite{Bilbao2009}. However, in my application, when working with two  elements of different types, it is better to take a step back to the slightly less simple, but more physically accurate world. In the rest of this document I will thus use a dimensional form for the equations.
 
 \subsection{Ideal Stiff String}
 The PDE for a stiff string is a combination of the 1D wave equation (Eq. \eqref{eq:1DWave}) and the ideal bar model (Eq. 7.1):
@@ -185,10 +185,14 @@ and when introducing stiffness factor $\kappa =\sqrt{D/\rho H}$, \eqref{eq:plate
 \begin{equation}\label{eq:plateFDS}
     \delta_{tt}u = -\kappa^2\delta_{\Delta\boxplus}\delta_{\Delta\boxplus} u,
 \end{equation}
-Again, expanding the operators yields
-
-\frac{1}{k^2}(u_l^{n+1}-2u_l^n+u_l^{n-1}) = -\frac{\kappa^2}\delta_{\Delta\boxplus}\frac{1}{h^4}
-
+Then, expanding the operators yields
+\begin{equation}
+\begin{aligned}
+\frac{1}{k^2}(u_{l,m}^{n+1}-2u_{l,m}^n+u_{l,m}^{n-1}) &= -\kappa^2\delta_{\Delta\boxplus}\frac{1}{h^2}(u_{l+1, m}^n + u_{l-1, m}^n + u_{l, m+1}^n + u_{l, m-1}^n - 4 u_{l, m}^n)\\
+&=-\kappa^2\frac{1}{h^4}\big((u_{l+2, m}^n + u_{l, m}^n + u_{l+1, m+1}^n + u_{l+1, m-1}^n - 4 u_{l+1, m}^n)\\
+&+(u_{l, m}^n + u_{l-2, m}^n + u_{l-1, m+1}^n + u_{l-1, m-1}^n - 4 u_{l-1, m}^n)\big)
+\end{aligned}
+\end{equation}
 
 \section{Energy Analysis: A Tutorial}\label{sec:energy}
 As mentioned in Section \ref{sec:introduction}, energy analysis is the only way to 'debug' physical models. In this section I will give an overview on how to do an energy analysis using the stiff string as a case study. 
