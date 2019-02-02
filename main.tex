@@ -181,24 +181,42 @@ where $D = EH^3/12(1-\nu^2)$ with plate thickness $H$ [m] and unit-less Poisson'
 \begin{equation}\label{eq:plateFDS}
     \rho H \delta_{tt}u = -D\delta_{\Delta\boxplus}\delta_{\Delta\boxplus} u,
 \end{equation}
-and when introducing stiffness factor $\kappa =\sqrt{D/\rho H}$, \eqref{eq:plateFDS} becomes
+and when introducing stiffness factor $\kappa =\sqrt{D/\rho H}$, Eq. \eqref{eq:plateFDS} becomes
 \begin{equation}\label{eq:plateFDS}
     \delta_{tt}u = -\kappa^2\delta_{\Delta\boxplus}\delta_{\Delta\boxplus} u,
 \end{equation}
-Then, expanding the operators yields
+Then, expanding the operators yields (Sec. 12.1.4)
+\begin{equation}\nonumber
+\begin{alignedat}{2}
+    \frac{1}{k^2}(u_{l,m}^{n+1}-2u_{l,m}^n+u_{l,m}^{n-1}) &=-\kappa^2&&\delta_{\Delta\boxplus}\frac{1}{h^2}(u_{l+1, m}^n + u_{l-1, m}^n + u_{l, m+1}^n + u_{l, m-1}^n - 4 u_{l, m}^n)\\
+    &=-\kappa^2&&\frac{1}{h^2}(\delta_{\Delta\boxplus}u_{l+1, m}^n + \delta_{\Delta\boxplus}u_{l-1, m}^n + \delta_{\Delta\boxplus}u_{l, m+1}^n + \delta_{\Delta\boxplus}u_{l, m-1}^n - 4 \delta_{\Delta\boxplus}u_{l, m}^n)\\
+    &=-\kappa^2&&\frac{1}{h^4}\big[(u_{l+2, m}^n + u_{l, m}^n + u_{l+1, m+1}^n + u_{l+1, m-1}^n - 4 u_{l+1, m}^n)\\
+    & &&\: \:+(u_{l, m}^n + u_{l-2, m}^n + u_{l-1, m+1}^n + u_{l-1, m-1}^n - 4 u_{l-1, m}^n)\\
+    & &&\: \:+(u_{l+1, m+1}^n + u_{l-1, m+1}^n + u_{l, m+2}^n + u_{l, m}^n - 4 u_{l, m+1}^n)
+    \\
+    & &&\: \:+(u_{l+1, m-1}^n + u_{l-1, m-1}^n + u_{l, m}^n + u_{l, m-2}^n - 4 u_{l, m-1}^n)\\
+    & &&\: \:-(4u_{l+1, m}^n + 4u_{l-1, m}^n + 4u_{l, m+1}^n + 4u_{l, m-1}^n - 16 u_{l, m}^n)\big]\\
+    &=-&&\kappa^2\frac{1}{h^4}\big[(u_{l+2, m}^n + u_{l-2, m}^n+u_{l, m+2}^n+u_{l, m+2}^n)\\
+    & &&\ \ \ +2(u_{l+1, m+1}^n + u_{l-1, m+1}^n+u_{l-1, m+1}^n+u_{l-1, m-1}^n)\\
+    & &&\ \ \ -8(u_{l+1, m}^n + u_{l-1, m}^n+u_{l, m+1}^n+u_{l, m+1}^n)\\
+    & &&\ \ \ +20u_{l,m}^n\big].
+    \end{alignedat}
+\end{equation}
+Solving for $u_{l,m}^{n+1}$ then gives 
 \begin{equation}
-\begin{aligned}
-\frac{1}{k^2}(u_{l,m}^{n+1}-2u_{l,m}^n+u_{l,m}^{n-1}) &= -\kappa^2\delta_{\Delta\boxplus}\frac{1}{h^2}(u_{l+1, m}^n + u_{l-1, m}^n + u_{l, m+1}^n + u_{l, m-1}^n - 4 u_{l, m}^n)\\
-&=-\kappa^2\frac{1}{h^4}\big((u_{l+2, m}^n + u_{l, m}^n + u_{l+1, m+1}^n + u_{l+1, m-1}^n - 4 u_{l+1, m}^n)\\
-&+(u_{l, m}^n + u_{l-2, m}^n + u_{l-1, m+1}^n + u_{l-1, m-1}^n - 4 u_{l-1, m}^n)\big)
-\end{aligned}
+    \begin{aligned}
+    u_{l,m}^{n+1} = 2u_{l,m}^n-&\frac{\kappa^2k^2}{h^4} \big[(u_{l+2, m}^n + u_{l-2, m}^n+u_{l, m+2}^n+u_{l, m+2}^n)\\
+    & \ \ \; +2(u_{l+1, m+1}^n + u_{l-1, m+1}^n+u_{l-1, m+1}^n+u_{l-1, m-1}^n)\\
+    & \ \ \; -8(u_{l+1, m}^n + u_{l-1, m}^n+u_{l, m+1}^n+u_{l, m+1}^n)\\
+    & \ \ \; +20u_{l,m}^n\big]- u_{l,m}^{n-1}.
+    \end{aligned}
 \end{equation}
 
 \section{Energy Analysis: A Tutorial}\label{sec:energy}
 As mentioned in Section \ref{sec:introduction}, energy analysis is the only way to 'debug' physical models. In this section I will give an overview on how to do an energy analysis using the stiff string as a case study. 
 
 \subsubsection*{Step 1: Calculate the rate of change of the total energy $\mathfrak{H}$} %(taking the inner product with a single time derivative of $u$
-The rate of change of the total energy (or Hamiltonian (Sec. 3.1.2)) $\mathfrak{H}$ of a system over domain $\mathcal{D}$ can be obtained by calculating the inner product of a system with $u_t$ \cite{Desv2017}
+The rate of change of the total energy (or Hamiltonian (Sec. 3.1.2)) $\mathfrak{H}$ of a system over domain $\mathcal{D}$ can be obtained by calculating the inner product of a system with $u_t$ \cite{Desv2017} %Me: "why?" Stefan: something something about the multiplication of the velocity of the state with the state gives power (??) but in general "because that's what you do".
 \begin{equation}\label{eq:generalEnergy}
     \frac{d \mathfrak{H}}{dt} = \langle u_t, \text{PDE} \rangle_\mathcal{D} \quad \text{with} \quad \mathfrak{H} = \mathfrak{T} + \mathfrak{D},
 \end{equation}
@@ -215,22 +233,22 @@ In discrete time, Eq. \eqref{eq:generalEnergy} looks like %stefan said that you 
 \begin{equation}\label{eq:generalEnergyDiscretised}
     \delta_{t+}\mathfrak{h} = \langle \delta_{t\cdot}u, \text{FDS}\rangle_\mathcal{D} \quad \text{with} \quad \mathfrak{h} = \mathfrak{t} + \mathfrak{v},
 \end{equation}
-where $\mathfrak{h}$, $\mathfrak{t}$ and $\mathfrak{v}$ are approximated (discretised) versions of $\mathfrak{H}$, $\mathfrak{T}$ and $\mathfrak{D}$ and FDS is a finite-difference scheme such as Eq. \eqref{eq:stiffStringFDS}. Note that we use $\delta_{t+}$ because (ask Stefan).
+where $\mathfrak{h}$, $\mathfrak{t}$ and $\mathfrak{v}$ are approximated (discretised) versions of $\mathfrak{H}$, $\mathfrak{T}$ and $\mathfrak{D}$ and FDS is a finite-difference scheme such as Eq. \eqref{eq:stiffStringFDS}. Note that the forward time difference $\delta_{t+}$ is used (and not the backwards or centered) because of convention and preference [Bilbao, verbally].
 So in the case of a stiff string in discrete time (or choosing Eq. \eqref{eq:stiffStringFDS} for FDS) Eq. \eqref{eq:generalEnergyDiscretised} gives
 \begin{equation}
      \rho A \langle \delta_{t\cdot}u, \delta_{tt} u\rangle_\mathcal{D} = T \langle \delta_{t\cdot}u, \delta_{xx}u\rangle_\mathcal{D} - EI \langle \delta_{t\cdot}u, \delta_{xxxx}u \rangle_\mathcal{D}.
 \end{equation}
 Note that for the approximation of $u_t$ the centered difference operator $\delta_{t\cdot}$ has been used. This is because it is the most accurate approximation of the single time derivative \cite{Bilbao2009}. Using integration by parts (Eq. 5.10 or Eq. 6.14 for its use in practice) and moving all terms to the left hand side gives us the rate of change of the total energy of the system:
 
-\begin{equation}\label{eq:stiffStringEnergy}
+\begin{equation}\label{eq:rateOfChangeEnergyString}
      \delta_{t+}\mathfrak{h} = \rho A \langle \delta_{t\cdot}u, \delta_{tt} u\rangle_\mathcal{D} + T \langle \delta_{t\cdot}\delta_{x+}u, \delta_{x+}u\rangle_\mathcal{D} + EI \langle \delta_{t\cdot}\delta_{xx}u, \delta_{xx}u \rangle_\mathcal{D} = 0.
 \end{equation}
-In a certain sense, when moving a single spatial derivative from one term in the inner product to the other, the sign of that term inverts.
-
-\subsubsection*{Step 2: Obtaining the total energy $\mathfrak{H}$ (Factoring out $\delta_{t+}$)}
+\textit{Note: in a certain sense, when moving a single spatial derivative from one term in the inner product to the other, the sign of that term inverts.
+}
+\subsubsection*{Step 2: Obtaining the total energy $\mathfrak{H}$ (isolating $\delta_{t+}$)}
 % "In energetic analysis, whenever possible, it is useful to rewrite terms such as these as time derivatives of a single quantity" \cite{Bilbao2009}
 Now that we obtained the rate of change of the total energy of our PDE, in order to get the actual energy it is necessary to factor out a single derivative with respect to time.
- In the case of the stiff string (or any other system), the goal is to rewrite Eq. \eqref{eq:stiffStringEnergy} into the form of
+ In the case of the stiff string (or any other system), the goal is to rewrite Eq. \eqref{eq:rateOfChangeEnergyString} into the form of
 \begin{equation}\label{eq:forwardTimeForm}
     \delta_{t+}(\text{X}) = 0,
 \end{equation}
@@ -239,7 +257,7 @@ As the first term can be expanded to
 \begin{equation}
     \rho A\sum_\mathcal{D}h(\delta_{t\cdot}u)(\delta_{tt}u).
 \end{equation}
-When factoring out $\delta_{t+}$ we get (Eq. 2.22a)
+Isolating $\delta_{t+}$ we get (Eq. 2.22a)
 \begin{equation}
 \delta_{t+}\Bigg(\frac{\rho A}{2}\sum_\mathcal{D}h(\delta_{t-}u)^2\Bigg) = \delta_{t+}\Bigg(\frac{\rho A}{2} \left\lVert\delta_{t-}u\right\rVert_\mathcal{D}^2\Bigg).
 \end{equation}
@@ -247,7 +265,7 @@ The second term can be expanded (using Eq. \eqref{eq:innerProduct}) to get
 \begin{equation}
     T \sum_{\mathcal{D}}h (\delta_{t\cdot}\delta_{x+}u)(\delta_{x+}u).
 \end{equation}
-Again, factoring out $\delta_{t+}$ (Sec. 2.4.1)
+Again, isolating $\delta_{t+}$ (Sec. 2.4.1)
 \begin{equation}
     \delta_{t+}\Bigg(\frac{T}{2}\sum_\mathcal{D}h (\delta_{x+}u)( e_{t-}\delta_{x+}u)\Bigg) = \delta_{t+}\Bigg(\frac{T}{2}\langle\delta_{x+}u, e_{t-}\delta_{x+}u\rangle_\mathcal{D}\Bigg),
 \end{equation}
@@ -256,19 +274,19 @@ We can do the same with the last term. Expanding gives
 \begin{equation}
     EI \sum_{\mathcal{D}}h(\delta_{t\cdot}\delta_{xx}u)(\delta_{xx}u),
 \end{equation}
-and factoring out $\delta_{t+}$ yields (Eq. 2.22b)
+and isolating $\delta_{t+}$ yields (Eq. 2.22b)
 \begin{equation}
     \delta_{t+}\Bigg(\frac{EI}{2}\sum_\mathcal{D}h(\delta_{xx}u)(e_{t-}\delta_{xx}u)\Bigg) = \delta_{t+}\Bigg(\frac{EI}{2}\langle\delta_{xx}u,e_{t-}\delta_{xx}u\rangle_\mathcal{D}\Bigg).
 \end{equation}
-Now we can finally write Eq. \eqref{eq:stiffStringEnergy} in the form presented in Eq. \eqref{eq:forwardTimeForm}:
+Now we can finally write Eq. \eqref{eq:rateOfChangeEnergyString} in the form presented in Eq. \eqref{eq:forwardTimeForm}:
 \begin{equation}
     \delta_{t+}\mathfrak{h} = \delta_{t+}\Bigg(\frac{\rho A}{2}\left\lVert\delta_{t-}u\right\rVert_\mathcal{D}^2 + \frac{T}{2}\langle\delta_{x+}u, e_{t-}\delta_{x+}u\rangle_\mathcal{D} +\frac{EI}{2}\langle\delta_{xx}u,e_{t-}\delta_{xx}u\rangle_\mathcal{D}\Bigg) = 0.
 \end{equation}
-Integrating both sides with respect to time (removing/dividing by? the $\delta_{t+}$ operator on both sides) yields the total energy $\mathfrak{h}$:
+Integrating both sides with respect to time (removing/dividing by? the $\delta_{t+}$ operator on both sides) yields an equation for the total energy $\mathfrak{h}$:
 \begin{equation}\label{eq:totEnergyString}
     \mathfrak{h} = \frac{\rho A}{2}\left\lVert\delta_{t-}u\right\rVert_\mathcal{D}^2 + \frac{T}{2}\langle\delta_{x+}u, e_{t-}\delta_{x+}u\rangle_\mathcal{D} +\frac{EI}{2}\langle\delta_{xx}u,e_{t-}\delta_{xx}u\rangle_\mathcal{D},
 \end{equation}
-which is not necessarily 0! 
+which is not necessarily 0! %(as integration adds an arbitrary constant) 
 
 \subsubsection*{Step 3: Checking units}
 In order to check whether the terms in the equation for total energy, in this case Eq. \eqref{eq:totEnergyString}, are correct, it is important to check their units. Energy is measured in Joules [kg$\cdot$m$^2\cdot$s$^{-2}$]. A first order temporal difference operator (Eqs. (\ref{eq:firstOrderTime}a-c)) will `add' one [s$^{-1}$] (because of the $1/k$) and a first order spatial difference operator (Eqs. (\ref{eq:firstOrderSpace}a-c)) will `add' one [m$^{-1}$] ($1/h$) unit. All states $u$ will `add' one [m] to the equation. Along these lines, a second order time or difference operator (Eqs. \eqref{eq:secondOrderTime} and \eqref{eq:secondOrderSpace}) will `add' a [s$^{-2}$] or [m$^{-2}$] respectively. It is important to note that the time shift operator ($e_{t-}$) does not influence the units. For units on several variables, see Appendix \ref{app:A}. For the terms above, we have:
@@ -305,8 +323,29 @@ As calculating the potential energy requires grid-points left and right of $l$, 
 This is possible as the boundary conditions of the string have been chosen to be clamped, meaning the points at $u_l^n = 0$ at $l = \{0, 1, N-1, N\}$ for all $n$. Even though the displacement at points $l = \{1, N-1\}$ will always be zero, the energy is not necessarily zero. When calculating the energy for the aforementioned points, the points $l = \{2, N-2\}$ are included which are not necessarily $0$.
 
 \section{Case study: Energy analysis of a string and plate connected by a non-linear spring}
-
-
+Now that we have established a method to retrieve the equation of the total energy from a PDE we can apply this to more complicated systems. The goal of my visit was to perform an energy analysis of a string connected to a plate by means of a non-linear spring. As the equation for the total energy of the string has already been shown in Eq. \eqref{eq:totEnergyString}, we can move on to a slightly more complicated model: the plate (Eq. \eqref{eq:platePDE}). As this model is two-dimensional, the domain will now be denoted as $\mathcal{D}^2$. 
+\subsubsection*{Step 1: Calculate the rate of change of the total energy $\mathfrak{H}$}
+Starting off with the FDS approximating the PDE of a plate (Eq. \eqref{eq:plateFDS}) and employing Eq. \eqref{eq:generalEnergyDiscretised} yields
+\begin{equation}
+    \rho H \langle \delta_{t\cdot} u, \delta_{tt}u\rangle_{\mathcal{D}^2} = -D\langle\delta_{t\cdot}u,\delta_{\Delta\boxplus}\delta_{\Delta\boxplus}u\rangle_{\mathcal{D}^2}\ .
+\end{equation}
+Employing integration by parts in 2D (Eq. 10.19 or Eq. 12.16 for its use in practice) and moving all terms to the left hand side gives the rate of change of the total energy of the system:
+\begin{equation}\label{eq:rateOfChangeEnergyPlate}
+    \delta_{t+} \mathfrak{h} = \rho H \langle \delta_{t\cdot} u, \delta_{tt}u\rangle_{\mathcal{D}^2} + D\langle\delta_{t\cdot}\delta_{\Delta\boxplus}u,\delta_{\Delta\boxplus}u\rangle_{\mathcal{D}^2} = 0.
+\end{equation}
+\subsubsection*{Step 2: Obtaining the total energy $\mathfrak{H}$ (isolating $\delta_{t+}$)}
+It can immediately be observed that the first term in Eq. \eqref{eq:rateOfChangeEnergyPlate} is almost identical to the first term in Eq. \eqref{eq:rateOfChangeEnergyString}. We can isolate $\delta_{t+}$ in the same way resulting in
+\begin{equation}
+    \delta_{t+}\Bigg(\frac{\rho H}{2} \left\lVert\delta_{t-}u\right\rVert_{\mathcal{D}^2}^2\Bigg).
+\end{equation}
+The same goes for the second term (Eq. 2.22b)
+\begin{equation}
+    \delta_{t+}\Bigg(\frac{D}{2}\langle\delta_{\Delta\boxplus} u, e_{t-}\delta_{\Delta\boxplus} u\rangle\Bigg)
+\end{equation}
+\subsubsection*{Step 5}
+Matrix representation
+% \begin{equation}
+% \end{equation}
 \appendix
 \section{List of symbols} \label{app:A}
 {\renewcommand{\arraystretch}{1.1}
