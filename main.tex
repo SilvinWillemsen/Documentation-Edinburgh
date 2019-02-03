@@ -22,7 +22,7 @@ The goal of my visit to the University of Edinburgh was to learn more about \tex
     \textit{The purpose of the visit to the University of Edinburgh is to fully understand the concept of energy analysis and be able to apply it to arbitrary (connected) physical models. The goal will have been fulfilled if I can carry out an energy analysis on a string and a plate connected by a non-linear spring.}
 \end{center}
 
-This document shows what I learned during my two weeks at the University of Edinburgh. It will contain a tutorial on performing energy analysis for (my) future reference. 
+This document shows what I learned during my two weeks at the University of Edinburgh. It will contain a tutorial on performing energy analysis (for future reference). 
 
 Stefan Bilbao's \textit{Numerical Sound Synthesis} \cite{Bilbao2009} will be used as the main reference for this document. Whenever referred to an Equation, Section or Chapter, it can be assumed that this can be found in Bilbao's book. References to equations or sections in this document can be identified by only having one number (e.g. Eq. \eqref{eq:1DWave} instead of Eq. (6.1)) unless specified otherwise.
 
@@ -34,11 +34,11 @@ Stefan Bilbao's \textit{Numerical Sound Synthesis} \cite{Bilbao2009} will be use
 % \end{figure}
 
 \section{Notation}\label{sec:notation} 
-The notation used in this document will be the one used in \cite{Bilbao2009}. 
+The notation used in this document will be the one used in \cite{Bilbao2009}. In this section, the notation will be briefly touched upon as it will be used extensively throughout the document.
 
 \subsection{Difference Operators} 
 % This section is divided into two: operators in 1D and operators in 2D.
-Timeshifts (Sec 2.2)
+Timeshifts (Sec 2.2) (ADD MORE HERE)
 \begin{equation}
     e_{t+}u_l^n = u_l^{n+1}, \quad e_{t-}u_l^n = u_l^{n-1}
 \end{equation}
@@ -104,7 +104,7 @@ A commonly used operator to denote a second order spatial derivative in both $x$
 When applied twice, this is called the biharmonic or bi-Laplacian operator and results in (Eq. 10.3) \begin{equation}
     \Delta\Delta u = u_{xxxx} + 2u_{xxyy} + u_{yyyy}.
 \end{equation}
-In discrete time we can approximate the above operators (Sec. 10.2, Eq. 10.9:
+The two spatial dimensions can be discretised using $x=lh$ where $l\in[0,N_x]$ and $y=mh$, where $m\in[0,N_y]$. In discrete time, we can approximate the above operators (Sec. 10.2, Eq. 10.9):
 \begin{equation}
     \Delta u \approx \delta_{\Delta\boxplus} \triangleq \delta_{xx}u + \delta_{yy}u
 \end{equation}
@@ -124,7 +124,18 @@ In discrete time this becomes (Eq. 5.20)
 \begin{equation}\label{eq:innerProduct}
      \langle f^n,g^n\rangle_\mathcal{D} = \sum_{l\in\mathcal{D}}h f^n_l g^n_l \quad \text{and} \quad \left\lVert f^n \right\rVert^2_\mathcal{D} = \sum_{l\in\mathcal{D}}h(f^n_l)^2.
 \end{equation}
-Note the multiplication with the grid spacing $h$ in the sum.
+Note the multiplication with the grid spacing $h$ in the sum. In a 2D domain the domain will be denoted by $\mathcal{D}^2$. The inner product in continuous time will be (Eq. 10.4)
+\begin{equation}
+    \langle f,g\rangle_{\mathcal{D}^2} = \iint_{\mathcal{D}^2}fgdxdy, 
+\quad \text{and} \quad 
+    \langle f,f \rangle_{\mathcal{D}^2} = \left\lVert f \right\rVert^2_{\mathcal{D}^2}.
+\end{equation}
+In discrete time, this becomes (Sec 10.2.3)
+
+\begin{equation}\label{eq:discrete2DInnerProduct}
+    \langle f^n, g^n \rangle_{\mathcal{D}^2} = \sum_{(l,m)\in\mathcal{D}^2}h^2f_{l.m}g_{l,m} \quad \text{and} \quad \left\lVert f^n \right\rVert_{\mathcal{D}^2}^2 = \sum_{(l,m)\in\mathcal{D}^2}h^2(f_l^n)^2.
+\end{equation}
+Note the multiplication with the squared grid spacing $h^2$ rather than $h$.
 \subsection{Energy}
 For the total energy in continuous time we use $\mathfrak{H}$ which is mostly an addition of the kinetic energy denoted by $\mathfrak{T}$ and the potential energy denoted by $\mathfrak{D}$. In discrete time these will be $\mathfrak{h}$, $\mathfrak{t}$ and $\mathfrak{v}$ %why not d though??
 respectively.
@@ -185,24 +196,7 @@ and when introducing stiffness factor $\kappa =\sqrt{D/\rho H}$, Eq. \eqref{eq:p
 \begin{equation}\label{eq:plateFDS}
     \delta_{tt}u = -\kappa^2\delta_{\Delta\boxplus}\delta_{\Delta\boxplus} u,
 \end{equation}
-Then, expanding the operators yields (Sec. 12.1.4)
-\begin{equation}\nonumber
-\begin{alignedat}{2}
-    \frac{1}{k^2}(u_{l,m}^{n+1}-2u_{l,m}^n+u_{l,m}^{n-1}) &=-\kappa^2&&\delta_{\Delta\boxplus}\frac{1}{h^2}(u_{l+1, m}^n + u_{l-1, m}^n + u_{l, m+1}^n + u_{l, m-1}^n - 4 u_{l, m}^n)\\
-    &=-\kappa^2&&\frac{1}{h^2}(\delta_{\Delta\boxplus}u_{l+1, m}^n + \delta_{\Delta\boxplus}u_{l-1, m}^n + \delta_{\Delta\boxplus}u_{l, m+1}^n + \delta_{\Delta\boxplus}u_{l, m-1}^n - 4 \delta_{\Delta\boxplus}u_{l, m}^n)\\
-    &=-\kappa^2&&\frac{1}{h^4}\big[(u_{l+2, m}^n + u_{l, m}^n + u_{l+1, m+1}^n + u_{l+1, m-1}^n - 4 u_{l+1, m}^n)\\
-    & &&\: \:+(u_{l, m}^n + u_{l-2, m}^n + u_{l-1, m+1}^n + u_{l-1, m-1}^n - 4 u_{l-1, m}^n)\\
-    & &&\: \:+(u_{l+1, m+1}^n + u_{l-1, m+1}^n + u_{l, m+2}^n + u_{l, m}^n - 4 u_{l, m+1}^n)
-    \\
-    & &&\: \:+(u_{l+1, m-1}^n + u_{l-1, m-1}^n + u_{l, m}^n + u_{l, m-2}^n - 4 u_{l, m-1}^n)\\
-    & &&\: \:-(4u_{l+1, m}^n + 4u_{l-1, m}^n + 4u_{l, m+1}^n + 4u_{l, m-1}^n - 16 u_{l, m}^n)\big]\\
-    &=-&&\kappa^2\frac{1}{h^4}\big[(u_{l+2, m}^n + u_{l-2, m}^n+u_{l, m+2}^n+u_{l, m+2}^n)\\
-    & &&\ \ \ +2(u_{l+1, m+1}^n + u_{l-1, m+1}^n+u_{l-1, m+1}^n+u_{l-1, m-1}^n)\\
-    & &&\ \ \ -8(u_{l+1, m}^n + u_{l-1, m}^n+u_{l, m+1}^n+u_{l, m+1}^n)\\
-    & &&\ \ \ +20u_{l,m}^n\big].
-    \end{alignedat}
-\end{equation}
-Solving for $u_{l,m}^{n+1}$ then gives 
+Then, expanding the operators and solving for $u_{l,m}^{n+1}$ yields (Sec. 12.1.4)
 \begin{equation}
     \begin{aligned}
     u_{l,m}^{n+1} = 2u_{l,m}^n-&\frac{\kappa^2k^2}{h^4} \big[(u_{l+2, m}^n + u_{l-2, m}^n+u_{l, m+2}^n+u_{l, m+2}^n)\\
@@ -211,7 +205,7 @@ Solving for $u_{l,m}^{n+1}$ then gives
     & \ \ \; +20u_{l,m}^n\big]- u_{l,m}^{n-1}.
     \end{aligned}
 \end{equation}
-
+For a derivation of this please see Appendix \ref{app:B}. 
 \section{Energy Analysis: A Tutorial}\label{sec:energy}
 As mentioned in Section \ref{sec:introduction}, energy analysis is the only way to 'debug' physical models. In this section I will give an overview on how to do an energy analysis using the stiff string as a case study. 
 
@@ -265,7 +259,7 @@ The second term can be expanded (using Eq. \eqref{eq:innerProduct}) to get
 \begin{equation}
     T \sum_{\mathcal{D}}h (\delta_{t\cdot}\delta_{x+}u)(\delta_{x+}u).
 \end{equation}
-Again, isolating $\delta_{t+}$ (Sec. 2.4.1)
+Again, isolating $\delta_{t+}$ (Sec. 2.22b)
 \begin{equation}
     \delta_{t+}\Bigg(\frac{T}{2}\sum_\mathcal{D}h (\delta_{x+}u)( e_{t-}\delta_{x+}u)\Bigg) = \delta_{t+}\Bigg(\frac{T}{2}\langle\delta_{x+}u, e_{t-}\delta_{x+}u\rangle_\mathcal{D}\Bigg),
 \end{equation}
@@ -334,14 +328,28 @@ Employing integration by parts in 2D (Eq. 10.19 or Eq. 12.16 for its use in prac
     \delta_{t+} \mathfrak{h} = \rho H \langle \delta_{t\cdot} u, \delta_{tt}u\rangle_{\mathcal{D}^2} + D\langle\delta_{t\cdot}\delta_{\Delta\boxplus}u,\delta_{\Delta\boxplus}u\rangle_{\mathcal{D}^2} = 0.
 \end{equation}
 \subsubsection*{Step 2: Obtaining the total energy $\mathfrak{H}$ (isolating $\delta_{t+}$)}
-It can immediately be observed that the first term in Eq. \eqref{eq:rateOfChangeEnergyPlate} is almost identical to the first term in Eq. \eqref{eq:rateOfChangeEnergyString}. We can isolate $\delta_{t+}$ in the same way resulting in
+It can immediately be observed that the first term in Eq. \eqref{eq:rateOfChangeEnergyPlate} is almost identical to the first term in Eq. \eqref{eq:rateOfChangeEnergyString}. As the plate is a 2D system, we use Eq. \eqref{eq:discrete2DInnerProduct} to expand the term 
+\begin{equation}
+    \rho H\sum_{\mathcal{D}^2}h^2(\delta_{t\cdot}u)(\delta_{tt}u)
+\end{equation}
+after which $\delta_{t+}$ can be isolated (Eq. 2.22a)
 \begin{equation}
     \delta_{t+}\Bigg(\frac{\rho H}{2} \left\lVert\delta_{t-}u\right\rVert_{\mathcal{D}^2}^2\Bigg).
 \end{equation}
-The same goes for the second term (Eq. 2.22b)
+Expanding the second term yields
 \begin{equation}
-    \delta_{t+}\Bigg(\frac{D}{2}\langle\delta_{\Delta\boxplus} u, e_{t-}\delta_{\Delta\boxplus} u\rangle\Bigg)
+    D\sum_{\mathcal{D}^2}h^2(\delta_{t\cdot}\delta_{\Delta\boxplus}u)(\delta_{\Delta\boxplus}u),
 \end{equation}
+after which $\delta_{t+}$ can again be isolated (Eq. 2.22b)
+\begin{equation}
+    \delta_{t+}\Bigg(\frac{D}{2}\langle\delta_{\Delta\boxplus} u, e_{t-}\delta_{\Delta\boxplus} u\rangle_{\mathcal{D}^2}\Bigg).
+\end{equation}
+The equation for the total energy can then easily be obtained
+\begin{equation}
+    \mathfrak{h} = \frac{\rho H}{2} \left\lVert\delta_{t-}u\right\rVert_{\mathcal{D}^2}^2 + \frac{D}{2}\langle\delta_{\Delta\boxplus} u, e_{t-}\delta_{\Delta\boxplus} u\rangle_{\mathcal{D}^2}\ .
+\end{equation}
+\subsubsection*{Step 3: Checking units}
+
 \subsubsection*{Step 5}
 Matrix representation
 % \begin{equation}
@@ -368,8 +376,24 @@ Matrix representation
  $\gamma$ & Scaled wave speed & s$^{-1}$\\
 \end{tabular}
 }
-\section{Code}
-
+\section{Plate FDS in steps}\label{app:B}
+\begin{equation}\nonumber
+\begin{alignedat}{2}
+    \frac{1}{k^2}(u_{l,m}^{n+1}-2u_{l,m}^n+u_{l,m}^{n-1}) &=-\kappa^2&&\delta_{\Delta\boxplus}\frac{1}{h^2}(u_{l+1, m}^n + u_{l-1, m}^n + u_{l, m+1}^n + u_{l, m-1}^n - 4 u_{l, m}^n)\\
+    &=-\kappa^2&&\frac{1}{h^2}(\delta_{\Delta\boxplus}u_{l+1, m}^n + \delta_{\Delta\boxplus}u_{l-1, m}^n + \delta_{\Delta\boxplus}u_{l, m+1}^n + \delta_{\Delta\boxplus}u_{l, m-1}^n - 4 \delta_{\Delta\boxplus}u_{l, m}^n)\\
+    &=-\kappa^2&&\frac{1}{h^4}\big[(u_{l+2, m}^n + u_{l, m}^n + u_{l+1, m+1}^n + u_{l+1, m-1}^n - 4 u_{l+1, m}^n)\\
+    & &&\: \:+(u_{l, m}^n + u_{l-2, m}^n + u_{l-1, m+1}^n + u_{l-1, m-1}^n - 4 u_{l-1, m}^n)\\
+    & &&\: \:+(u_{l+1, m+1}^n + u_{l-1, m+1}^n + u_{l, m+2}^n + u_{l, m}^n - 4 u_{l, m+1}^n)
+    \\
+    & &&\: \:+(u_{l+1, m-1}^n + u_{l-1, m-1}^n + u_{l, m}^n + u_{l, m-2}^n - 4 u_{l, m-1}^n)\\
+    & &&\: \:-(4u_{l+1, m}^n + 4u_{l-1, m}^n + 4u_{l, m+1}^n + 4u_{l, m-1}^n - 16 u_{l, m}^n)\big]\\
+    &=-&&\kappa^2\frac{1}{h^4}\big[(u_{l+2, m}^n + u_{l-2, m}^n+u_{l, m+2}^n+u_{l, m+2}^n)\\
+    & &&\ \ \ +2(u_{l+1, m+1}^n + u_{l-1, m+1}^n+u_{l-1, m+1}^n+u_{l-1, m-1}^n)\\
+    & &&\ \ \ -8(u_{l+1, m}^n + u_{l-1, m}^n+u_{l, m+1}^n+u_{l, m+1}^n)\\
+    & &&\ \ \ +20u_{l,m}^n\big].
+    \end{alignedat}
+\end{equation}
+\section{Code}\label{app:C}
 \bibliographystyle{plain}
 \bibliography{references}
 \end{document}
